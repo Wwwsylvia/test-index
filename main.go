@@ -3,11 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"oras.land/oras-go/v2"
 	"oras.land/oras-go/v2/content"
+	"oras.land/oras-go/v2/errdef"
 	"oras.land/oras-go/v2/registry/remote"
 	"oras.land/oras-go/v2/registry/remote/auth"
 	"oras.land/oras-go/v2/registry/remote/credentials"
@@ -60,7 +62,7 @@ func generateManifest(ctx context.Context, repo *remote.Repository, tag string) 
 	opts := oras.PackManifestOptions{
 		Layers: []v1.Descriptor{blobDesc},
 	}
-	if err := repo.Blobs().Push(ctx, blobDesc, bytes.NewReader(blob)); err != nil {
+	if err := repo.Blobs().Push(ctx, blobDesc, bytes.NewReader(blob)); err != nil && !errors.Is(err, errdef.ErrAlreadyExists) {
 		return v1.Descriptor{}, err
 	}
 
