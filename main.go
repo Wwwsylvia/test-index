@@ -31,6 +31,8 @@ func main() {
 	authClient := auth.DefaultClient
 	authClient.Credential = credentials.Credential(credsStore)
 	repo.Client = authClient
+	scope := auth.ScopeRepository(repo.Reference.Repository, auth.ActionPull, auth.ActionPush)
+	ctx = auth.AppendScopes(ctx, scope)
 
 	// push manifest
 	m1, err := generateManifest(ctx, repo, "") // manifest with no tag
