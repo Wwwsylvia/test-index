@@ -70,10 +70,13 @@ func generateManifest(ctx context.Context, repo *remote.Repository, tag string) 
 	if err != nil {
 		return v1.Descriptor{}, err
 	}
-	if tag == "" {
-		return desc, nil
+	if tag != "" {
+		if _, err := oras.Tag(ctx, repo, desc.Digest.String(), tag); err != nil {
+			return v1.Descriptor{}, err
+		}
 	}
-	return oras.Tag(ctx, repo, desc.Digest.String(), tag)
+
+	return desc, nil
 }
 
 func generateIndex(ctx context.Context, repo *remote.Repository, manifests []v1.Descriptor, subject *v1.Descriptor, tag string) (v1.Descriptor, error) {
@@ -84,8 +87,11 @@ func generateIndex(ctx context.Context, repo *remote.Repository, manifests []v1.
 	if err != nil {
 		return v1.Descriptor{}, err
 	}
-	if tag == "" {
-		return desc, nil
+	if tag != "" {
+		if _, err := oras.Tag(ctx, repo, desc.Digest.String(), tag); err != nil {
+			return v1.Descriptor{}, err
+		}
 	}
-	return oras.Tag(ctx, repo, desc.Digest.String(), tag)
+
+	return desc, nil
 }
